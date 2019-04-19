@@ -131,7 +131,7 @@ if args.SMOOTH:
     except:
         print("Error during smoothing amplitude data")
 
-plt.title("Amplitude diagram")
+plt.title("Amplitude diagram (N=%d)"%STEP_COUNT)
 plt.xlabel("Frequency [Hz]")
 plt.ylabel("Voltage Peak-Peak [V]")
 plt.legend()
@@ -144,7 +144,7 @@ plt.show()
 
 if args.PHASE:
     plt.plot(freqs, phases)
-    plt.title("Phase diagram")
+    plt.title("Phase diagram (N=%d)"%STEP_COUNT)
     plt.ylabel("Phase [°]")
     plt.xlabel("Frequency [Hz]")
 
