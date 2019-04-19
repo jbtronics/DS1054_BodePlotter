@@ -62,6 +62,8 @@ awg = jds6600(DEFAULT_PORT)
 
 AWG_MAX_FREQ = awg.getinfo_devicetype()
 print("Maximum Generator Frequency: %d MHz"% AWG_MAX_FREQ)
+if MAX_FREQ > AWG_MAX_FREQ:
+    exit("Your MAX_FREQ is higher than your AWG can achieve!")
 
 # We use sine for sweep
 awg.setwaveform(AWG_CHANNEL, "sine")
