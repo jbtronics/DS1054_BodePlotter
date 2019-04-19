@@ -22,6 +22,8 @@ parser.add_argument("--step_time", dest="TIMEOUT", default=0.00, type=float, hel
 parser.add_argument("--phase", dest="PHASE", action="store_true", help="Set this flag if you want to plot the Phase diagram too")
 parser.add_argument("--no_smoothing", dest="SMOOTH", action="store_false", help="Set this to disable the smoothing of the data with a Savitzky–Golay filter")
 parser.add_argument("--use_manual_settings", dest="MANUAL_SETTINGS", action="store_true", help="When this option is set, the options on the oscilloscope for voltage and time base are not changed by this program.")
+parser.add_argument("--output", dest="file", type=argparse.FileType("w"), help="Write the measured data to the given CSV file.")
+
 
 args = parser.parse_args()
 
@@ -62,7 +64,7 @@ awg = jds6600(DEFAULT_PORT)
 
 AWG_MAX_FREQ = awg.getinfo_devicetype()
 print("Maximum Generator Frequency: %d MHz"% AWG_MAX_FREQ)
-if MAX_FREQ > AWG_MAX_FREQ:
+if MAX_FREQ > AWG_MAX_FREQ * 1e6:
     exit("Your MAX_FREQ is higher than your AWG can achieve!")
 
 # We use sine for sweep
@@ -114,7 +116,7 @@ for freq in freqs:
 
         # Use better voltage scale for next time
         if volt:
-            scope.set_channel_scale(2, volt / 3, use_closest_match=True)
+            scope.set_channel_scale(2, volt / 2, use_closest_match=True)
 
     # Measure phase
     if args.PHASE:
@@ -124,6 +126,33 @@ for freq in freqs:
         phases.append(phase)
 
     print(freq)
+
+# Write data to file if needed
+if args.file:
+
+    if args.PHASE:
+        args.file.write("Frequency in Hz; Amplitude in V; Phase in Degree\n")
+    else:
+        args.file.write("Frequency in Hz; Amplitude in V\n")
+
+    for n in range(1, len(freqs) -1):
+        if volts[n]:
+            volt = volts[n]
+        else:
+            volt = float("nan")
+        
+        if args.PHASE:
+            if phases[n]:
+                phase = phases[n]
+            else:
+                phase = phases[n]
+            args.file.write("%f;%f;%f \n"%(freqs[n], volt, phase))
+        else:
+            args.file.write("%f;%f \n"%(freqs[n], volt))
+      
+    args.file.close()
+
+# Plot graphics
 
 plt.plot(freqs, volts, label="Measured data")
 if args.SMOOTH:
