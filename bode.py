@@ -157,7 +157,7 @@ if args.file:
 plt.plot(freqs, volts, label="Measured data")
 if args.SMOOTH:
     try:
-        yhat = scipy.signal.savgol_filter(volts, 51, 3) # window size 51, polynomial order 3
+        yhat = scipy.signal.savgol_filter(volts, 9, 3) # window size 51, polynomial order 3
         plt.plot(freqs, yhat, "--", color="red", label="Smoothed data")
     except:
         print("Error during smoothing amplitude data")
@@ -181,7 +181,7 @@ if args.PHASE:
 
     if args.SMOOTH:
         try:
-            yhat = scipy.signal.savgol_filter(phases, 51, 3) # window size 51, polynomial order 3
+            yhat = scipy.signal.savgol_filter(phases, 9, 3) # window size 51, polynomial order 3
             plt.plot(freqs, yhat, "--", color="red", label="Smoothed data")
         except:
             print("Error during smoothing phase data")
