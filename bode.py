@@ -24,6 +24,7 @@ parser.add_argument("--no_smoothing", dest="SMOOTH", action="store_false", help=
 parser.add_argument("--use_manual_settings", dest="MANUAL_SETTINGS", action="store_true", help="When this option is set, the options on the oscilloscope for voltage and time base are not changed by this program.")
 parser.add_argument("--output", dest="file", type=argparse.FileType("w"), help="Write the measured data to the given CSV file.")
 parser.add_argument("--no_plots", dest="PLOTS", action="store_false", help="When this option is set no plots are shown. Useful in combination with --output")
+parser.add_argument("--normalize", dest="NORMALIZE", action="store_true", help="Set this option if you dont want to get the absolute voltage levels on the output, but the value normalized on the input level.")
 
 args = parser.parse_args()
 
@@ -105,8 +106,14 @@ time.sleep(0.05)
 for freq in freqs:
     awg.setfrequency(AWG_CHANNEL, float(freq))
     time.sleep(TIMEOUT)
-    volt = scope.get_channel_measurement(2, 'vpp')
-    volts.append(volt)
+
+    if not args.NORMALIZE:
+        volt = scope.get_channel_measurement(2, 'vpp')
+        volts.append(volt)
+    else:
+        volt0 = scope.get_channel_measurement(1, 'vpp')
+        volt = scope.get_channel_measurement(2, 'vpp')
+        volts.append(volt/volt0)
 
     # Use a better timebase
     if not args.MANUAL_SETTINGS:
