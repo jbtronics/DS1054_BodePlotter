@@ -18,9 +18,10 @@ parser.add_argument("--awg_port", dest="AWG_PORT", default="COM3", help="The ser
 parser.add_argument("--ds_ip", default="auto", dest="OSC_IP", help="The IP address of the DS1054Z. Set to auto, to auto discover the oscilloscope via Zeroconf")
 parser.add_argument("--linear", dest="LINEAR", action="store_true", help="Set this flag to use a linear scale")
 parser.add_argument("--awg_voltage", dest="VOLTAGE", default=5, type=float, help="The amplitude of the signal used for the generator")
-parser.add_argument("--step_time", dest="TIMEOUT", default=0.050, type=float, help="The pause between to measurements in ms.")
+parser.add_argument("--step_time", dest="TIMEOUT", default=0.00, type=float, help="The pause between to measurements in ms.")
 parser.add_argument("--phase", dest="PHASE", action="store_true", help="Set this flag if you want to plot the Phase diagram too")
 parser.add_argument("--no_smoothing", dest="SMOOTH", action="store_false", help="Set this to disable the smoothing of the data with a Savitzky–Golay filter")
+parser.add_argument("--use_manual_settings", dest="MANUAL_SETTINGS", action="store_true", help="When this option is set, the options on the oscilloscope for voltage and time base are not changed by this program.")
 
 args = parser.parse_args()
 
@@ -64,10 +65,21 @@ print("Maximum Generator Frequency: %d MHz"% AWG_MAX_FREQ)
 
 # We use sine for sweep
 awg.setwaveform(AWG_CHANNEL, "sine")
- 
 
 # Init scope
 scope = DS1054Z(OSC_IP)
+
+# Set some options for the oscilloscope
+
+if not args.MANUAL_SETTINGS:
+    # Center vertically
+    scope.set_channel_offset(1, 0)
+    scope.set_channel_offset(2, 0)
+
+    # Set the sensitivity according to the selected voltage
+    scope.set_channel_scale(1, args.VOLTAGE / 3, use_closest_match=True)
+    # Be a bit more pessimistic for the default voltage, because we run into problems if it is too confident
+    scope.set_channel_scale(2, args.VOLTAGE / 2, use_closest_match=True) 
 
 freqs = np.linspace(MIN_FREQ, MAX_FREQ, num=STEP_COUNT)
 
@@ -82,12 +94,25 @@ awg.setamplitude(AWG_CHANNEL, AWG_VOLT)
 volts = list()
 phases = list()
 
+# We have to wait a bit before we measure the first value
+awg.setfrequency(AWG_CHANNEL, float(freqs[0]))
+time.sleep(0.05)
+
 for freq in freqs:
-    print(freq)
     awg.setfrequency(AWG_CHANNEL, float(freq))
-    #volt0 = scope.get_channel_measurement(1, 'vpp')
+    time.sleep(TIMEOUT)
     volt = scope.get_channel_measurement(2, 'vpp')
     volts.append(volt)
+
+    # Use a better timebase
+    if not args.MANUAL_SETTINGS:
+        # Display one period in 3 divs
+        period = (1/freq) / 3
+        scope.timebase_scale = period
+
+        # Use better voltage scale for next time
+        if volt:
+            scope.set_channel_scale(2, volt / 3, use_closest_match=True)
 
     # Measure phase
     if args.PHASE:
@@ -95,7 +120,8 @@ for freq in freqs:
         if phase:
             phase = -phase
         phases.append(phase)
-    time.sleep(TIMEOUT)
+
+    print(freq)
 
 plt.plot(freqs, volts, label="Measured data")
 if args.SMOOTH:
