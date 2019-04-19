@@ -23,7 +23,7 @@ parser.add_argument("--phase", dest="PHASE", action="store_true", help="Set this
 parser.add_argument("--no_smoothing", dest="SMOOTH", action="store_false", help="Set this to disable the smoothing of the data with a Savitzky–Golay filter")
 parser.add_argument("--use_manual_settings", dest="MANUAL_SETTINGS", action="store_true", help="When this option is set, the options on the oscilloscope for voltage and time base are not changed by this program.")
 parser.add_argument("--output", dest="file", type=argparse.FileType("w"), help="Write the measured data to the given CSV file.")
-
+parser.add_argument("--no_plots", dest="PLOTS", action="store_false", help="When this option is set no plots are shown. Useful in combination with --output")
 
 args = parser.parse_args()
 
@@ -135,7 +135,7 @@ if args.file:
     else:
         args.file.write("Frequency in Hz; Amplitude in V\n")
 
-    for n in range(1, len(freqs) -1):
+    for n in range(0, len(freqs)):
         if volts[n]:
             volt = volts[n]
         else:
@@ -153,6 +153,9 @@ if args.file:
     args.file.close()
 
 # Plot graphics
+
+if not args.PLOTS:
+    exit()
 
 plt.plot(freqs, volts, label="Measured data")
 if args.SMOOTH:
