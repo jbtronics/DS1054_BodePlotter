@@ -7,6 +7,8 @@ import argparse
 
 import matplotlib.pyplot as plt
 
+import scipy.signal
+
 parser = argparse.ArgumentParser(description="This program plots Bode Diagrams of a DUT using an JDS6600 and Rigol DS1054Z")
 
 parser.add_argument('MIN_FREQ', metavar='min', type=float, help="The minimum frequency for which should be tested")
@@ -18,6 +20,7 @@ parser.add_argument("--linear", dest="LINEAR", action="store_true", help="Set th
 parser.add_argument("--awg_voltage", dest="VOLTAGE", default=5, type=float, help="The amplitude of the signal used for the generator")
 parser.add_argument("--step_time", dest="TIMEOUT", default=0.050, type=float, help="The pause between to measurements in ms.")
 parser.add_argument("--phase", dest="PHASE", action="store_true", help="Set this flag if you want to plot the Phase diagram too")
+parser.add_argument("--no_smoothing", dest="SMOOTH", action="store_false", help="Set this to disable the smoothing of the data with a Savitzky–Golay filter")
 
 args = parser.parse_args()
 
@@ -88,14 +91,24 @@ for freq in freqs:
 
     # Measure phase
     if args.PHASE:
-        phase = scope.get_channel_measurement('CHAN1, CHAN2', 'fphase')
+        phase = scope.get_channel_measurement('CHAN1, CHAN2', 'rphase')
+        if phase:
+            phase = -phase
         phases.append(phase)
     time.sleep(TIMEOUT)
 
-plt.plot(freqs, volts)
+plt.plot(freqs, volts, label="Measured data")
+if args.SMOOTH:
+    try:
+        yhat = scipy.signal.savgol_filter(volts, 51, 3) # window size 51, polynomial order 3
+        plt.plot(freqs, yhat, "--", color="red", label="Smoothed data")
+    except:
+        print("Error during smoothing amplitude data")
+
 plt.title("Amplitude diagram")
 plt.xlabel("Frequency [Hz]")
 plt.ylabel("Voltage Peak-Peak [V]")
+plt.legend()
 
 # Set log x axis
 if not args.LINEAR:
@@ -107,4 +120,18 @@ if args.PHASE:
     plt.plot(freqs, phases)
     plt.title("Phase diagram")
     plt.ylabel("Phase [°]")
+    plt.xlabel("Frequency [Hz]")
+
+    if args.SMOOTH:
+        try:
+            yhat = scipy.signal.savgol_filter(phases, 51, 3) # window size 51, polynomial order 3
+            plt.plot(freqs, yhat, "--", color="red", label="Smoothed data")
+        except:
+            print("Error during smoothing phase data")
+        
+
+    # Set log x axis
+    if not args.LINEAR:
+        plt.xscale("log")
+
     plt.show()
