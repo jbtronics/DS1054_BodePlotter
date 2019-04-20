@@ -1,5 +1,7 @@
 # DS1054Z_BodePlotter
-A Python program that plots Bode diagrams of a component using a Rigol DS1054Z Oscilloscope and a JDS6600 DDS Generator.
+A Python program that plots Bode plots of a component using a Rigol DS1054Z Oscilloscope and a JDS6600 DDS Generator.
+
+A [Bode plot](https://en.wikipedia.org/wiki/Bode_plot) shows the  frequency response of a system plotted in a phase and a amplitude graph.
 
 # Requirements
 DS1054Z_BodePlotter needs a numpy/scipy/matplotlib environment. Under Linux Distros you can install these via package manager ([See here](https://www.scipy.org/install.html) for more informations).
@@ -24,6 +26,10 @@ By default only the Amplitude diagram is measured and plotted. If you also want 
 If you want to use the measured data in another software like OriginLab or Matlab, you can export it to a semicolon-seperated CSV file with the `--output` option.
 
 So a typical command line would like this: ```python bode.py 1e3 2.2e6 100 --ds_ip 192.168.1.108 --awg_port /dev/ttyUSB0 --phase --output out.csv```
+
+By default the amplitude plots are shown with linear voltage scale. If you want to get logarithmic axis you can switch this in the plot windows under Figure options.
+
+To see the full list of possible options call `python bode.py --help`.
 
 # Output examples
 Here are some example measurements:
