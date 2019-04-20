@@ -1,3 +1,10 @@
+# bode.py
+# Program to plot bode diagrams using a DS1054Z and a JDS6600
+
+# Jan Böhmer (c) 2019
+# published under MIT license. See file "LICENSE" for full license text
+
+
 from jds6600 import *
 
 import numpy as np
