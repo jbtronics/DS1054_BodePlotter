@@ -26,6 +26,15 @@ If you want to use the measured data in another software like OriginLab or Matla
 So a typical command line would like this: ```python bode.py 1e3 2.2e6 100 --ds_ip 192.168.1.108 --awg_port /dev/ttyUSB0 --phase --output out.csv```
 
 # Output examples
-Here are some measurements of a parallel LC circuit:
-![Amplitude Diagram](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/LC_Amplitude.png)
-![Phase Diagram](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/LC_PHASE.png)
+Here are some example measurements:
+## LC Parallel Resonance Circuit
+![LC Amplitude Diagram](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/LC_Amplitude.png)
+![LC Phase Diagram](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/LC_PHASE.png)
+
+## RL high pass
+![RL Amplitude](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RL_Amplitude.png)
+![RL Phase](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RL_Phase.png)
+
+## RC low pass
+![RC Amplitude](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RC_Amplitude.png)
+![RL Phase](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RC_Phase.png)
