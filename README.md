@@ -15,6 +15,8 @@ Connect your JDS6600 via USB with you computer and connect the DS1054Z to networ
 
 Connect the Channel 1 output of the JDS6600 to CH1 of the DS1054Z and to the input of the component you want to test (DUT = Device under test). Connect CH2 of the DS1054Z to the output of the DUT.
 
+![Schematic](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/BodePlotter_schematic.svg?sanitize=true)
+
 # Usage
 The basic syntax is `python bode.py MIN_FREQ MAX_FREQ [FREQ_COUNT]`, so if you, for example, want to test your DUT between 1kHz and 2.2Mhz, with 100 steps (default is 50),
 you can do it like this: `python bode.py 1e3 2.2e6 100`.
