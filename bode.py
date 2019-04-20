@@ -124,6 +124,8 @@ for freq in freqs:
         # Use better voltage scale for next time
         if volt:
             scope.set_channel_scale(2, volt / 2, use_closest_match=True)
+        else:
+            scope.set_channel_scale(2, AWG_VOLT / 2, use_closest_match=True)
 
     # Measure phase
     if args.PHASE:
