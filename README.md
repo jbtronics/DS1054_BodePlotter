@@ -39,7 +39,7 @@ Here are some example measurements:
 ![RC Amplitude](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RC_Amplitude.png)
 ![RL Phase](https://github.com/jbtronics/DS1054_BodePlotter/raw/master/examples/RC_Phase.png)
 
-## License
+# License
 This program is licensed under the MIT License. See [LICENSE](https://github.com/jbtronics/DS1054_BodePlotter/blob/master/LICENSE) file for more info.
 
 The jds6600.py library was taken from [here](https://github.com/on1arf/jds6600_python)
